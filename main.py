@@ -54,11 +54,38 @@ def set_hp(uid: int, guild_id: int, hp: int):
     conn.commit()
 
 
+def has_role(role_name: str):
+    async def predicate(interaction: discord.Interaction) -> bool:
+        if interaction.guild is None:
+            return False
+
+        # Get the Member object for the user in this guild
+        member: discord.Member | None = interaction.guild.get_member(
+            interaction.user.id
+        )
+        if member is None:
+            return False
+
+        # Check if they have the role
+        role = discord.utils.get(member.roles, name=role_name)
+        return role is not None
+
+    return app_commands.check(predicate)
+
+
 # --- events ---
 @bot.event
 async def on_ready():
     await bot.tree.sync()
     print(f"Bot ready as {bot.user}")
+
+
+@bot.tree.error
+async def on_app_command_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.CheckFailure):
+        await interaction.response.send_message(
+            "You do not have permission to use this command.", ephemeral=True
+        )
 
 
 # --- slash commands ---
@@ -83,7 +110,6 @@ async def hp(interaction: discord.Interaction):
 @app_commands.describe(
     member="Select the member to modify", amount="Amount of HP to add"
 )
-@app_commands.default_permissions(administrator=True)
 async def hp_add(
     interaction: discord.Interaction, member: discord.Member, amount: int = 1
 ):
@@ -106,7 +132,6 @@ async def hp_add(
 @app_commands.describe(
     member="Select the member to modify", amount="Amount of HP to remove"
 )
-@app_commands.default_permissions(administrator=True)
 async def hp_remove(
     interaction: discord.Interaction, member: discord.Member, amount: int = 1
 ):
@@ -129,7 +154,7 @@ async def hp_remove(
 @bot.tree.command(
     name="players", description="Show all players and their HP (mods only)"
 )
-@app_commands.default_permissions(administrator=True)
+@has_role("slime")
 async def players(interaction: discord.Interaction):
     """List all players in the current server and their HP visually with ❤️."""
     guild = interaction.guild
