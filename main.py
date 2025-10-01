@@ -110,6 +110,7 @@ async def hp(interaction: discord.Interaction):
 @app_commands.describe(
     member="Select the member to modify", amount="Amount of HP to add"
 )
+@has_role("slime")
 async def hp_add(
     interaction: discord.Interaction, member: discord.Member, amount: int = 1
 ):
@@ -132,6 +133,7 @@ async def hp_add(
 @app_commands.describe(
     member="Select the member to modify", amount="Amount of HP to remove"
 )
+@has_role("slime")
 async def hp_remove(
     interaction: discord.Interaction, member: discord.Member, amount: int = 1
 ):
