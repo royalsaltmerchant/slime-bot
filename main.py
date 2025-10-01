@@ -83,7 +83,7 @@ async def hp(interaction: discord.Interaction):
 @app_commands.describe(
     member="Select the member to modify", amount="Amount of HP to add"
 )
-@commands.has_permissions(administrator=True)
+@app_commands.default_permissions(administrator=True)
 async def hp_add(
     interaction: discord.Interaction, member: discord.Member, amount: int = 1
 ):
@@ -106,7 +106,7 @@ async def hp_add(
 @app_commands.describe(
     member="Select the member to modify", amount="Amount of HP to remove"
 )
-@commands.has_permissions(administrator=True)
+@app_commands.default_permissions(administrator=True)
 async def hp_remove(
     interaction: discord.Interaction, member: discord.Member, amount: int = 1
 ):
@@ -129,7 +129,7 @@ async def hp_remove(
 @bot.tree.command(
     name="players", description="Show all players and their HP (mods only)"
 )
-@commands.has_permissions(administrator=True)
+@app_commands.default_permissions(administrator=True)
 async def players(interaction: discord.Interaction):
     """List all players in the current server and their HP visually with ❤️."""
     guild = interaction.guild
